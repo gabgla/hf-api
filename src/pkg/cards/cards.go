@@ -40,7 +40,8 @@ type Side struct {
 	Tokens []Token
 
 	// Original fields in case numeric parsing doesn't work
-	PowerOriginal     string
-	ToughnessOriginal string
-	LoyaltyOriginal   string
+	CostOriginal      *string
+	PowerOriginal     *string
+	ToughnessOriginal *string
+	LoyaltyOriginal   *string
 }

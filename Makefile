@@ -6,4 +6,4 @@ download-db:
 
 .PHONY: run
 run:
-	LOCAL=1 go run ./src/cmd/main.go
+	go run ./src/cmd/http_server/main.go
