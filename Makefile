@@ -6,11 +6,9 @@ download-db:
 	curl -o "./${DATABASE_JSON_FILENAME}" "${DATABASE_URL}"
 
 generate-db:
-	go run src/cmd/gendb/gendb.go "${DATABASE_GOB_FILENAME}" < "${DATABASE_JSON_FILENAME}"
+	go run src/cmd/gendb/gendb.go "src/internal/data/${DATABASE_GOB_FILENAME}" < "${DATABASE_JSON_FILENAME}"
 
 setup: download-db generate-db
-	ln -s "${DATABASE_GOB_FILENAME}" "src/cmd/httpserver/${DATABASE_GOB_FILENAME}" && \
-	ln -s "${DATABASE_GOB_FILENAME}" "src/cmd/lambda/${DATABASE_GOB_FILENAME}"
 
 run-http:
 	go run ./src/cmd/httpserver/httpserver.go
