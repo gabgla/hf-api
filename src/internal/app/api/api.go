@@ -42,14 +42,14 @@ func Router(ctx context.Context, req APIRequest) *APIResponse {
 		if k.Path == req.URL().Path {
 			return &APIResponse{
 				Code:  http.StatusMethodNotAllowed,
-				Error: wrapError("Method not allowed", nil),
+				Error: wrapError("method not allowed", nil),
 			}
 		}
 	}
 
 	return &APIResponse{
 		Code:  http.StatusNotFound,
-		Error: wrapError("Not found", nil),
+		Error: wrapError("not found", nil),
 	}
 }
 

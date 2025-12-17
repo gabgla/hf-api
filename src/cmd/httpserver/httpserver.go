@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"encoding/json"
 	"hfapi-app/src/internal/app/api"
 	"log"
@@ -8,7 +9,7 @@ import (
 	"net/url"
 )
 
-type RequestWrapper struct {
+type RequestAdapter struct {
 	*http.Request
 }
 
@@ -20,18 +21,21 @@ func runServer() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		res := api.Router(r.Context(), &RequestWrapper{Request: r})
+		res := api.Router(r.Context(), &RequestAdapter{Request: r})
 
 		w.WriteHeader(res.Code)
 
+		var body any
+
 		if res.Error != nil {
-			buf, _ := json.Marshal(res.Error)
-			_, _ = w.Write(buf)
-			return
+			body = res.Error
+		} else if res.Content != nil {
+			body = res.Content
 		}
 
-		if res.Content != nil {
-			buf, _ := json.Marshal(res.Error)
+		if body != nil {
+			w.Header().Set("Content-Type", "application/json")
+			buf, _ := json.Marshal(body)
 			_, _ = w.Write(buf)
 		}
 	})
@@ -43,10 +47,10 @@ func runServer() {
 	}
 }
 
-func (r *RequestWrapper) Method() string {
+func (r *RequestAdapter) Method() string {
 	return r.Request.Method
 }
 
-func (r *RequestWrapper) URL() *url.URL {
+func (r *RequestAdapter) URL() *url.URL {
 	return r.Request.URL
 }

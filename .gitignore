@@ -33,3 +33,4 @@ go.work.sum
 
 # App specific
 database.json
+# db.gob.bin

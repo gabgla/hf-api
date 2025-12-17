@@ -23,7 +23,7 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-type RequestWrapper struct {
+type RequestAdapter struct {
 	*events.APIGatewayProxyRequest
 }
 
@@ -190,7 +190,7 @@ func router(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIG
 		loadDB()
 	}
 
-	res := api.Router(ctx, &RequestWrapper{APIGatewayProxyRequest: &req})
+	res := api.Router(ctx, &RequestAdapter{APIGatewayProxyRequest: &req})
 	return lambdaResponse(res)
 }
 
@@ -232,11 +232,11 @@ func main() {
 	lambda.Start(router)
 }
 
-func (r *RequestWrapper) Method() string {
+func (r *RequestAdapter) Method() string {
 	return r.APIGatewayProxyRequest.HTTPMethod
 }
 
-func (r *RequestWrapper) URL() *url.URL {
+func (r *RequestAdapter) URL() *url.URL {
 	url, _ := url.Parse(r.APIGatewayProxyRequest.Path)
 	return url
 }
