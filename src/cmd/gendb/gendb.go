@@ -4,8 +4,8 @@ import (
 	_ "embed"
 	"encoding/gob"
 	"encoding/json"
-	"hfapi-app/src/pkg/cards"
-	"hfapi-app/src/utils"
+	"hf-api/src/pkg/cards"
+	"hf-api/src/utils"
 	"log"
 	"os"
 	"path/filepath"
@@ -41,6 +41,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to open file for write: %v", err)
 	}
+
+	defer file.Close()
 
 	enc := gob.NewEncoder(file)
 	err = enc.Encode(db)
