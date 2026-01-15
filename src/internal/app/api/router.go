@@ -33,7 +33,7 @@ func NewRouterHandler() http.Handler {
 	}
 
 	rootMux := http.NewServeMux()
-	rootMux.Handle("/api/v1/", http.StripPrefix("/api/v1", mux))
+	rootMux.Handle("/v1/", http.StripPrefix("/v1", mux))
 
 	return rootMux
 }

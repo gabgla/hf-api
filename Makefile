@@ -8,6 +8,9 @@ download-db:
 generate-db:
 	go run src/cmd/gendb/gendb.go "src/internal/data/${DATABASE_GOB_FILENAME}" < "${DATABASE_JSON_FILENAME}"
 
+generate-token-aliases:
+	go run src/cmd/codegens/codegens.go -- "src/internal/app/api/handlers_tokens.go"
+
 setup: download-db generate-db
 
 run-http:
@@ -18,4 +21,4 @@ run-lambda:
 
 run: run-http
 
-.PHONY: download-db generate-db setup run-http run-lambda run
+.PHONY: download-db generate-db generate-token-aliases setup run-http run-lambda run

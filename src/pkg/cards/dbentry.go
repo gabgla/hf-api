@@ -7,7 +7,7 @@ type Root struct {
 // Card represents a single card entry in the data array.
 type CardEntry struct {
 	Name                string    `json:"Name"`
-	Image               []*string `json:"Image"` // length 5, entries can be null or ""
+	Image               []*string `json:"Image"` // entries can be null or ""
 	Creator             string    `json:"Creator"`
 	Set                 string    `json:"Set"`
 	ConstructedLegality []string  `json:"Constructed"` // e.g. ["Legal"], ["Banned", ...]
@@ -32,7 +32,7 @@ type CardEntry struct {
 	Tokens []Token `json:"tokens,omitempty"` // optional tokens array
 
 	// Additional fields
-	ComponentOf   *string `json:"Component of"`              // usually ""
+	ComponentOf   *string `json:"Component of"`              // optional
 	IsActualToken *bool   `json:"isActualToken,omitempty"`   // optional
 	SmallAltImage *string `json:"small alt image,omitempty"` // optional
 }
