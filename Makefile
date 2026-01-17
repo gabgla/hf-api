@@ -6,7 +6,7 @@ download-db:
 	curl -o "./${DATABASE_JSON_FILENAME}" "${DATABASE_URL}"
 
 generate-db:
-	go run src/cmd/gendb/gendb.go "src/internal/data/${DATABASE_GOB_FILENAME}" < "${DATABASE_JSON_FILENAME}"
+	go run src/cmd/gendb/gendb.go "${DATABASE_JSON_FILENAME}" "src/internal/data/${DATABASE_GOB_FILENAME}"
 
 generate-token-aliases:
 	go run src/cmd/codegens/codegens.go -- "src/internal/app/api/handlers_tokens.go"

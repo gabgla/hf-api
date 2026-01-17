@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"encoding/gob"
 	"hf-api/src/pkg/cards"
+	"time"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/mapping"
@@ -25,12 +26,13 @@ func LoadDB() error {
 		return err
 	}
 
+	start := time.Now()
+
 	index, _ := bleve.NewMemOnly(buildMapping())
 
 	batch := index.NewBatch()
 	for i, c := range db {
-		doc := toDoc(c.Name, c)
-		batch.Index(doc.ID, doc)
+		batch.Index(c.Name, &c)
 
 		if (i+1)%500 == 0 {
 			_ = index.Batch(batch)
@@ -43,31 +45,11 @@ func LoadDB() error {
 
 	Index = index
 
+	end := time.Now()
+	elapsed := end.Sub(start)
+	println("Indexed", len(db), "cards in", elapsed.String())
+
 	return nil
-}
-
-type CardDoc struct {
-	ID        string   `json:"id"`
-	Name      string   `json:"name"`
-	Creator   string   `json:"creator"`
-	Set       string   `json:"set"`
-	ManaValue float64  `json:"mv"`
-	Colors    []string `json:"colors"`
-	Legality  []string `json:"legality"`
-	Tags      []string `json:"tags"`
-}
-
-func toDoc(id string, c cards.Card) CardDoc {
-	return CardDoc{
-		ID:        id,
-		Name:      c.Name,
-		Creator:   c.Creator,
-		Set:       c.Set,
-		ManaValue: float64(c.ManaValue),
-		Colors:    c.Colors,
-		Legality:  c.Legality,
-		Tags:      c.Tags,
-	}
 }
 
 func buildMapping() *mapping.IndexMappingImpl {
@@ -76,12 +58,6 @@ func buildMapping() *mapping.IndexMappingImpl {
 
 	doc := bleve.NewDocumentMapping()
 
-	// Full-text
-	ft := bleve.NewTextFieldMapping()
-	ft.Store = false
-	doc.AddFieldMappingsAt("full_text", ft)
-
-	// Also index name separately (so you can boost it)
 	name := bleve.NewTextFieldMapping()
 	name.Store = true // useful to display result titles without DB lookup
 	doc.AddFieldMappingsAt("name", name)
@@ -101,4 +77,78 @@ func buildMapping() *mapping.IndexMappingImpl {
 	m.DefaultMapping = doc
 	return m
 }
-var DBGob []byte
+
+// func translateScryfallToBleveQS(in string) string {
+// 	fieldMap := map[string]string{
+// 		"o": "oracle", "oracle": "oracle",
+// 		"t": "type_line", "type": "type_line",
+// 		"set": "set",
+// 		"c":   "colors", "color": "colors",
+// 		"mv": "mv", "cmc": "mv",
+// 		"tag":   "tags",
+// 		"legal": "legality",
+// 		"name":  "name",
+// 	}
+
+// 	toks := splitTokens(in) // handles quotes and parentheses minimally
+// 	var out []string
+
+// 	for _, tok := range toks {
+// 		if tok == "or" || tok == "OR" {
+// 			out = append(out, "OR")
+// 			continue
+// 		}
+
+// 		neg := strings.HasPrefix(tok, "-")
+// 		if neg {
+// 			tok = strings.TrimPrefix(tok, "-")
+// 		}
+
+// 		// fielded forms: key:value  OR  key<=3  OR  key:<=3
+// 		key, op, val, ok := parseField(tok)
+// 		if ok {
+// 			key = strings.ToLower(key)
+// 			if mapped, exists := fieldMap[key]; exists {
+// 				key = mapped
+// 			}
+
+// 			// Expand c:uw => +colors:U +colors:W
+// 			if key == "colors" && op == ":" && isColorLetters(val) {
+// 				for _, r := range strings.ToUpper(val) {
+// 					clause := fmt.Sprintf(`%scolors:%c`, prefix(neg), r)
+// 					// Scryfall implicit AND -> force each color required unless negated
+// 					if !neg {
+// 						clause = "+" + clause
+// 					}
+// 					out = append(out, clause)
+// 				}
+// 				continue
+// 			}
+
+// 			// Normal field clause
+// 			// Make it required by default (Scryfall semantics), unless it’s inside an OR group you build explicitly.
+// 			clause := fmt.Sprintf(`%s%s:%s%s`, prefix(neg), key, op, val)
+// 			if !neg {
+// 				clause = "+" + clause
+// 			}
+// 			out = append(out, clause)
+// 			continue
+// 		}
+
+// 		// Bare term / phrase / regex: require it to mimic Scryfall default AND.
+// 		if neg {
+// 			out = append(out, "-"+tok)
+// 		} else {
+// 			out = append(out, "+"+tok)
+// 		}
+// 	}
+
+// 	return strings.Join(out, " ")
+// }
+
+// func prefix(neg bool) string {
+// 	if neg {
+// 		return "-"
+// 	}
+// 	return ""
+// }

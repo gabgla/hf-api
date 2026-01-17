@@ -1,4 +1,4 @@
-package cards
+package hellfall
 
 type Root struct {
 	Data []CardEntry `json:"data"`
@@ -13,7 +13,7 @@ type CardEntry struct {
 	ConstructedLegality []string  `json:"Constructed"` // e.g. ["Legal"], ["Banned", ...]
 	Rulings             string    `json:"Rulings"`
 
-	CMC    *int   `json:"CMC"`      // null for lands / conspiracies
+	CMC    *any   `json:"CMC"`      // null for lands / conspiracies
 	Colors string `json:"Color(s)"` // "Red", "Blue;Black", or ""
 
 	// Sides

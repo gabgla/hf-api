@@ -84,10 +84,19 @@ func search(ctx context.Context, req *http.Request) *APIResponse {
 		}
 	}
 
-	searchRequest := bleve.NewSearchRequest(buildBleveQuery(filters))
+	// searchQuery := bleve.NewSearchRequest(buildBleveQuery(filters))
+	searchQuery := bleve.NewQueryStringQuery(query)
+
+	if _, err := searchQuery.Parse(); err != nil {
+		return &APIResponse{
+			Code:  http.StatusBadRequest,
+			Error: &APIError{Message: "Invalid query syntax"},
+		}
+	}
+
+	searchRequest := bleve.NewSearchRequest(searchQuery)
 	searchRequest.Fields = []string{"*"}
 	searchRequest.Size = 10
-	// searchRequest.SortBy([]string{"-_score"})
 
 	results, err := data.Index.SearchInContext(ctx, searchRequest)
 
