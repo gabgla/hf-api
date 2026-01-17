@@ -125,16 +125,16 @@ func getStringAndNumber(field *any) (*string, *float64) {
 	var fieldStr string
 	var fieldFloat *float64
 
-	if field != nil {
-		if v, ok := (*field).(string); ok {
-			fieldStr = v
-		} else if v, ok := (*field).(float64); ok {
-			fieldFloat = &v
-			fieldStr = strconv.FormatFloat(v, 'f', -1, 64)
-			return &fieldStr, fieldFloat
-		}
-	} else {
+	if field == nil {
 		return nil, nil
+	}
+
+	if v, ok := (*field).(string); ok {
+		fieldStr = v
+	} else if v, ok := (*field).(float64); ok {
+		fieldFloat = &v
+		fieldStr = strconv.FormatFloat(v, 'f', -1, 64)
+		return &fieldStr, fieldFloat
 	}
 
 	if n, err := strconv.ParseFloat(fieldStr, 64); err == nil {
