@@ -45,8 +45,6 @@ type Side struct {
 	TextBox    string   `json:"textbox"`
 	FlavorText string   `json:"flavor_text"`
 
-	Tags []string `json:"tags"`
-
 	// Original fields in case numeric parsing doesn't work
 	ManaValueOriginal *string `json:"mv_original"`
 	PowerOriginal     *string `json:"power_original"`

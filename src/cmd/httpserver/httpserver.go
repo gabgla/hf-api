@@ -9,7 +9,10 @@ import (
 )
 
 func main() {
-	data.LoadDB()
+	err := data.LoadDB()
+	if err != nil {
+		log.Fatal(err)
+	}
 	runServer()
 }
 

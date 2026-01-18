@@ -111,8 +111,6 @@ func ParseSides(c CardEntry) []cards.Side {
 			LoyaltyOriginal:   loyaltyStr,
 			TextBox:           utils.Coalesce(c.TextBox[i], ""),
 			FlavorText:        utils.Coalesce(c.FlavorText[i], ""),
-
-			Tags: strings.Split(c.Tags, sep),
 		}
 
 		sides = append(sides, side)
