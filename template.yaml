@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: hfapi-app (Go Lambda)
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 256
+    Tracing: Active
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        # Useful defaults; add your own
+        LOG_LEVEL: info
+
+Resources:
+  hfapi:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: provided.al2
+      Handler: bootstrap
+      CodeUri: .
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  ApiUrl:
+    Description: Local/Deployed HTTP API base URL
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"

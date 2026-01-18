@@ -117,7 +117,7 @@ func search(ctx context.Context, req *http.Request) *APIResponse {
 
 	return &APIResponse{
 		Code:    http.StatusOK,
-		Content: content,
+		Content: &content,
 	}
 }
 

@@ -32,6 +32,8 @@ go.work.sum
 .vscode/
 
 # App specific
+.aws-sam/
+build/
 database.json
 db.gob.bin
 index.bleve

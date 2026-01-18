@@ -12,12 +12,16 @@ generate-token-aliases:
 
 setup: download-db generate-db
 
+build-hfapi:
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o $(ARTIFACTS_DIR)/bootstrap ./src/cmd/lambda
+	cp -R index.bleve $(ARTIFACTS_DIR)/
+
 run-http:
 	go run ./src/cmd/httpserver/httpserver.go
 
 run-lambda:
-	go run ./src/cmd/lambda/lambda.go
+	sam build --cached && sam local start-api --warm-containers EAGER
 
 run: run-http
 
-.PHONY: download-db generate-db generate-token-aliases setup run-http run-lambda run
+.PHONY: download-db generate-db generate-token-aliases setup build-hfapi-lambda run-http run-lambda run

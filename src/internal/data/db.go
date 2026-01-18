@@ -21,6 +21,10 @@ var DB []cards.Card
 var Index bleve.Index
 
 func LoadDB() error {
+	if DB != nil {
+		return nil
+	}
+
 	start := time.Now()
 
 	dec := gob.NewDecoder(bytes.NewReader(dbGob))
@@ -36,7 +40,9 @@ func LoadDB() error {
 	fmt.Printf("loaded %d items in %dms\n", len(DB), elapsed.Milliseconds())
 
 	start = time.Now()
-	Index, err = bleve.Open(indexName)
+	Index, err = bleve.OpenUsing(indexName, map[string]any{
+		"read_only": true,
+	})
 	end = time.Now()
 	elapsed = end.Sub(start)
 
