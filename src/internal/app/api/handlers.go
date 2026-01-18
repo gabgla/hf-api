@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"hf-api/src/internal/data"
+	"hf-api/src/pkg/cards"
 	"math"
 	"net/http"
 	"regexp"
@@ -107,9 +108,16 @@ func search(ctx context.Context, req *http.Request) *APIResponse {
 		}
 	}
 
+	content := make([]cards.Card, len(results.Hits))
+
+	for i, hit := range results.Hits {
+		id, _ := strconv.Atoi(hit.ID)
+		content[i] = data.DB[id]
+	}
+
 	return &APIResponse{
 		Code:    http.StatusOK,
-		Content: results,
+		Content: content,
 	}
 }
 

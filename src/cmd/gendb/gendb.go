@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/mapping"
@@ -94,7 +95,8 @@ func generateIndex(indexPath string, db []cards.Card) error {
 
 	batch := index.NewBatch()
 	for i, c := range db {
-		batch.Index(c.Name, &c)
+		docID := strconv.Itoa(i)
+		batch.Index(docID, &c)
 
 		if (i+1)%batchSize == 0 {
 			_ = index.Batch(batch)
