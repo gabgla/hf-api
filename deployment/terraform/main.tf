@@ -170,8 +170,8 @@ resource "aws_apigatewayv2_stage" "api" {
   }
 
   default_route_settings {
-    throttling_burst_limit = 100
-    throttling_rate_limit = 50
+    throttling_burst_limit = var.api_gateway_throttling_burst_limit
+    throttling_rate_limit  = var.api_gateway_throttling_rate_limit
   }
 
   tags = var.tags
@@ -211,7 +211,7 @@ resource "aws_lambda_permission" "api_gateway" {
 # -----------------------------------------------------------------------------
 
 resource "aws_apigatewayv2_domain_name" "api" {
-  domain_name = var.api_subdomain
+  domain_name = "${var.api_subdomain}.${var.hosted_zone_name}"
 
   domain_name_configuration {
     certificate_arn = module.dns.certificate_arn
@@ -229,7 +229,7 @@ resource "aws_apigatewayv2_api_mapping" "api" {
 
 resource "aws_route53_record" "api_a" {
   zone_id = module.dns.zone_id
-  name    = var.api_subdomain
+  name    = "${var.api_subdomain}.${var.hosted_zone_name}"
   type    = "A"
 
   alias {
@@ -241,7 +241,7 @@ resource "aws_route53_record" "api_a" {
 
 resource "aws_route53_record" "api_aaaa" {
   zone_id = module.dns.zone_id
-  name    = var.api_subdomain
+  name    = "${var.api_subdomain}.${var.hosted_zone_name}"
   type    = "AAAA"
 
   alias {
