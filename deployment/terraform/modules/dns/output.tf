@@ -4,6 +4,6 @@ output "zone_id" {
 }
 
 output "certificate_arn" {
-  description = "The ARN of the ACM certificate"
-  value       = aws_acm_certificate.api.arn
+  description = "The ARN of the validated ACM certificate"
+  value       = aws_acm_certificate_validation.api.certificate_arn
 }
