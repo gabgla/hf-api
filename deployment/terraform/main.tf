@@ -50,9 +50,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifacts" {
 }
 
 resource "aws_s3_object" "lambda_placeholder" {
-  bucket  = aws_s3_bucket.artifacts.id
-  key     = "lambdas/hfapi/lambda.zip"
-  content = "placeholder"
+  bucket = aws_s3_bucket.artifacts.id
+  key    = "lambdas/hfapi/lambda.zip"
+  source = "${path.module}/bootstrap/lambda.zip"
 
   lifecycle {
     ignore_changes = [content, etag]
