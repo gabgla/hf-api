@@ -1,5 +1,10 @@
-output "artifact_s3_artifact_key" {
-  description = "The S3 artifact key"
+output "artifact_s3_bucket" {
+  description = "The S3 bucket for artifacts"
+  value       = aws_s3_bucket.artifacts.id
+}
+
+output "artifact_s3_key" {
+  description = "The S3 key for the Lambda artifact"
   value       = aws_s3_object.lambda_placeholder.key
 }
 

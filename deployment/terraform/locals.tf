@@ -8,5 +8,5 @@ locals {
     : "${var.namespace}-${var.environment}-"
   )
 
-  function_name = "${local.resource_prefix}hfapi-function"
+  function_name = "${local.resource_prefix}function"
 }

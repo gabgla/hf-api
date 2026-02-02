@@ -134,7 +134,7 @@ resource "aws_cloudwatch_log_group" "api" {
 # -----------------------------------------------------------------------------
 
 resource "aws_apigatewayv2_api" "api" {
-  name          = local.function_name
+  name          = "${local.function_name}-gw"
   protocol_type = "HTTP"
   description   = "HFAPI HTTP API Gateway"
 
@@ -178,7 +178,7 @@ resource "aws_apigatewayv2_stage" "api" {
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  name              = "/aws/api-gateway/${local.function_name}"
+  name              = "/aws/api-gateway/${local.function_name}-gw"
   retention_in_days = var.log_retention_days
 
   tags = var.tags
