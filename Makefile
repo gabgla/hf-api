@@ -1,5 +1,7 @@
 DATABASE_URL="https://raw.githubusercontent.com/bones-bones/hellfall/main/src/data/Hellscube-Database.json"
 DATABASE_JSON_FILENAME=database.json
+BUILD_FLAGS := GOOS=linux GOARCH=amd64 CGO_ENABLED=0
+LDFLAGS := -trimpath -ldflags="-s -w"
 
 download-db:
 	curl -o "./${DATABASE_JSON_FILENAME}" "${DATABASE_URL}"
@@ -12,14 +14,14 @@ generate-token-aliases:
 
 setup: download-db generate-db
 
-build-hfapi:
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o $(ARTIFACTS_DIR)/bootstrap ./src/cmd/lambda
+build-hfapi: # Don't change this name, it's used by AWS SAM
+	$(BUILD_FLAGS) go build $(LDFLAGS) -o $(ARTIFACTS_DIR)/bootstrap ./src/cmd/lambda
 	cp -R index.bleve $(ARTIFACTS_DIR)/
 
-build-for-lambda:
+build-for-lambda: setup clean
 	mkdir -p build/lambda
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o build/lambda/bootstrap ./src/cmd/lambda
-	cp -R index.bleve build/lambda/	
+	$(BUILD_FLAGS) go build $(LDFLAGS) -o build/lambda/bootstrap ./src/cmd/lambda
+	cp -R index.bleve build/lambda/
 
 run-http:
 	go run ./src/cmd/httpserver/httpserver.go
@@ -29,4 +31,10 @@ run-lambda:
 
 run: run-http
 
-.PHONY: download-db generate-db generate-token-aliases setup build-hfapi build-for-lambda run-http run-lambda run
+test:
+	go test ./...
+
+clean:
+	rm -rf build/
+
+.PHONY: download-db generate-db generate-token-aliases setup build-hfapi build-for-lambda run-http run-lambda run test clean

@@ -1,5 +1,8 @@
 BUILD_DIR=build/lambda
 
+# Setup
+make setup
+
 # Build the Lambda artifact
 make build-for-lambda
 
