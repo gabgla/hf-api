@@ -1,0 +1,35 @@
+# AWS Config
+aws_region  = "us-east-1"
+aws_profile = "default"
+
+# Deployment Config
+namespace   = "hfapi"
+environment = "dev"
+
+tags = {
+  Environment = "dev"
+  Project     = "hfapi"
+  ManagedBy   = "terraform"
+}
+
+# VPC Config
+create_vpc           = false
+create_public_subnet = false
+vpc_cidr_block       = "10.0.0.0/16"
+public_subnet_cidr   = null
+
+# DNS Config
+hosted_zone_name = "example.com" # Replace with your domain
+api_subdomain    = "hfapi"
+
+# Lambda Config
+lambda_memory_size = 128
+lambda_timeout     = 10
+
+lambda_environment_variables = {
+  LOG_LEVEL = "info"
+}
+
+# Logging and Monitoring Config
+enable_cloudwatch_logging = true
+log_retention_days        = 7

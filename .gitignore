@@ -36,4 +36,4 @@ go.work.sum
 build/
 database.json
 db.gob.bin
-index.bleve
+index.bleve/*
