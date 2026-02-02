@@ -16,6 +16,11 @@ build-hfapi:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o $(ARTIFACTS_DIR)/bootstrap ./src/cmd/lambda
 	cp -R index.bleve $(ARTIFACTS_DIR)/
 
+build-for-lambda:
+	mkdir -p build/lambda
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o build/lambda/bootstrap ./src/cmd/lambda
+	cp -R index.bleve build/lambda/	
+
 run-http:
 	go run ./src/cmd/httpserver/httpserver.go
 
@@ -24,4 +29,4 @@ run-lambda:
 
 run: run-http
 
-.PHONY: download-db generate-db generate-token-aliases setup build-hfapi-lambda run-http run-lambda run
+.PHONY: download-db generate-db generate-token-aliases setup build-hfapi build-for-lambda run-http run-lambda run

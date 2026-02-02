@@ -30,6 +30,13 @@ lambda_environment_variables = {
   LOG_LEVEL = "info"
 }
 
+lambda_reserved_concurrent_executions = 10
+
+# API Gateway Config
+api_gateway_throttling_burst_limit = 100
+api_gateway_throttling_rate_limit  = 50
+
+
 # Logging and Monitoring Config
 enable_cloudwatch_logging = true
 log_retention_days        = 7

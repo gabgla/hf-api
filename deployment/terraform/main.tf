@@ -22,6 +22,44 @@ module "dns" {
 }
 
 # -----------------------------------------------------------------------------
+# S3 Artifact Bucket
+# -----------------------------------------------------------------------------
+
+resource "aws_s3_bucket" "artifacts" {
+  bucket = "${local.resource_prefix}artifacts"
+
+  tags = var.tags
+}
+
+resource "aws_s3_bucket_versioning" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_object" "lambda_placeholder" {
+  bucket  = aws_s3_bucket.artifacts.id
+  key     = "lambdas/hfapi/lambda.zip"
+  content = "placeholder"
+
+  lifecycle {
+    ignore_changes = [content, etag, version_id]
+  }
+}
+
+# -----------------------------------------------------------------------------
 # Lambda Function
 # -----------------------------------------------------------------------------
 
@@ -31,8 +69,8 @@ resource "aws_lambda_function" "api" {
   runtime       = "provided.al2023"
   handler       = "bootstrap"
 
-  filename         = "${workspace.root_module.directory}/../artifacts/bootstrap.zip"
-  source_code_hash = filebase64sha256("${workspace.root_module.directory}/../artifacts/bootstrap.zip")
+  s3_bucket = aws_s3_bucket.artifacts.id
+  s3_key    = aws_s3_object.lambda_placeholder.key
 
   role        = aws_iam_role.lambda_exec.arn
   memory_size = var.lambda_memory_size
@@ -41,6 +79,8 @@ resource "aws_lambda_function" "api" {
   environment {
     variables = var.lambda_environment_variables
   }
+
+  reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
 
   tags = var.tags
 }
@@ -82,7 +122,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 # -----------------------------------------------------------------------------
 
 resource "aws_cloudwatch_log_group" "api" {
-  count = var.enable_cloudwatch_logging ? 1 : 0
+  count             = var.enable_cloudwatch_logging ? 1 : 0
   name              = "/aws/lambda/${local.function_name}"
   retention_in_days = var.log_retention_days
 
@@ -129,11 +169,16 @@ resource "aws_apigatewayv2_stage" "api" {
     })
   }
 
+  default_route_settings {
+    throttling_burst_limit = 100
+    throttling_rate_limit = 50
+  }
+
   tags = var.tags
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  count = var.enable_cloudwatch_logging ? 1 : 0
+  count             = var.enable_cloudwatch_logging ? 1 : 0
   name              = "/aws/api-gateway/${local.function_name}"
   retention_in_days = var.log_retention_days
 
@@ -180,7 +225,7 @@ resource "aws_apigatewayv2_api_mapping" "api" {
   api_id      = aws_apigatewayv2_api.http.id
   domain_name = aws_apigatewayv2_domain_name.api.id
 
-  stage       = aws_apigatewayv2_stage.api.id
+  stage = aws_apigatewayv2_stage.api.id
 }
 
 resource "aws_route53_record" "api_a" {

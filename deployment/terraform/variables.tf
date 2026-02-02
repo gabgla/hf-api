@@ -57,13 +57,13 @@ variable "public_subnet_cidr" {
 // DNS Config
 variable "hosted_zone_name" {
   description = "Name of the Hosted Zone, hosted in AWS"
-  type = string  
+  type        = string
 }
 
 variable "api_subdomain" {
   description = "Subdomain name to be combined with the hosted zone, namespace and environment"
-  type = string
-  default = "api"
+  type        = string
+  default     = "api"
 }
 
 // Lambda Config
@@ -83,6 +83,26 @@ variable "lambda_environment_variables" {
   description = "A map of environment variables to set for the Lambda function"
   type        = map(string)
   default     = {}
+}
+
+variable "lambda_reserved_concurrent_executions" {
+  description = "The number of concurrent executions reserved for the Lambda function"
+  type        = number
+  default     = 10
+}
+
+// API Gateway Config
+
+variable "api_gateway_throttling_burst_limit" {
+  description = "The API Gateway throttling burst limit"
+  type        = number
+  default     = 100
+}
+
+variable "api_gateway_throttling_rate_limit" {
+  description = "The API Gateway throttling rate limit"
+  type        = number
+  default     = 50
 }
 
 // Logging and Monitoring Config
