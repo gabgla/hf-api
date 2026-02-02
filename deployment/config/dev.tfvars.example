@@ -35,6 +35,11 @@ lambda_reserved_concurrent_executions = 10
 # API Gateway Config
 api_gateway_throttling_burst_limit = 100
 api_gateway_throttling_rate_limit  = 50
+cors_allow_origins                 = ["*"]
+cors_allow_methods                 = ["GET", "OPTIONS"]
+cors_allow_headers                 = ["Content-Type", "Authorization"]
+cors_expose_headers                = []
+cors_max_age                       = 3600
 
 
 # Logging and Monitoring Config

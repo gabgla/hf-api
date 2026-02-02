@@ -105,6 +105,36 @@ variable "api_gateway_throttling_rate_limit" {
   default     = 50
 }
 
+variable "cors_allow_origins" {
+  description = "CORS allowed origins"
+  type        = list(string)
+  default     = ["*"]
+}
+
+variable "cors_allow_methods" {
+  description = "CORS allowed methods"
+  type        = list(string)
+  default     = ["GET", "OPTIONS"]
+}
+
+variable "cors_allow_headers" {
+  description = "CORS allowed headers"
+  type        = list(string)
+  default     = ["Content-Type", "Authorization"]
+}
+
+variable "cors_expose_headers" {
+  description = "CORS headers to expose"
+  type        = list(string)
+  default     = []
+}
+
+variable "cors_max_age" {
+  description = "CORS preflight cache duration in seconds"
+  type        = number
+  default     = 3600
+}
+
 // Logging and Monitoring Config
 variable "enable_cloudwatch_logging" {
   description = "Enable CloudWatch logging for the API Gateway"

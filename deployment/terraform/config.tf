@@ -11,9 +11,5 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = locals.statefile_bucket
-    key    = locals.statefile_key
-    region = var.aws_region
-  }
+  backend "s3" {}
 }

@@ -55,7 +55,7 @@ resource "aws_s3_object" "lambda_placeholder" {
   content = "placeholder"
 
   lifecycle {
-    ignore_changes = [content, etag, version_id]
+    ignore_changes = [content, etag]
   }
 }
 
@@ -139,11 +139,11 @@ resource "aws_apigatewayv2_api" "api" {
   description   = "HFAPI HTTP API Gateway"
 
   cors_configuration {
-    allow_origins     = "*"
-    allow_methods     = "OPTIONS,GET,POST,PUT,DELETE,PATCH"
-    allow_headers     = "*"
-    expose_headers    = "*"
-    max_age           = "3600"
+    allow_origins     = var.cors_allow_origins
+    allow_methods     = var.cors_allow_methods
+    allow_headers     = var.cors_allow_headers
+    expose_headers    = var.cors_expose_headers
+    max_age           = var.cors_max_age
     allow_credentials = false
   }
 
@@ -178,7 +178,6 @@ resource "aws_apigatewayv2_stage" "api" {
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  count             = var.enable_cloudwatch_logging ? 1 : 0
   name              = "/aws/api-gateway/${local.function_name}"
   retention_in_days = var.log_retention_days
 
@@ -222,7 +221,7 @@ resource "aws_apigatewayv2_domain_name" "api" {
 }
 
 resource "aws_apigatewayv2_api_mapping" "api" {
-  api_id      = aws_apigatewayv2_api.http.id
+  api_id      = aws_apigatewayv2_api.api.id
   domain_name = aws_apigatewayv2_domain_name.api.id
 
   stage = aws_apigatewayv2_stage.api.id
@@ -241,7 +240,7 @@ resource "aws_route53_record" "api_a" {
 }
 
 resource "aws_route53_record" "api_aaaa" {
-  zone_id = data.aws_route53_zone.root.zone_id
+  zone_id = module.dns.zone_id
   name    = var.api_subdomain
   type    = "AAAA"
 
