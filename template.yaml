@@ -26,10 +26,7 @@ Resources:
 
       Events:
         Api:
-          Type: Api
-          Properties:
-            Path: /{proxy+}
-            Method: ANY
+          Type: HttpApi
 
 Outputs:
   ApiUrl:

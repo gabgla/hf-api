@@ -17,6 +17,6 @@ func main() {
 	}
 
 	handler := api.NewRouterHandler()
-	adapter := httpadapter.New(handler)
+	adapter := httpadapter.NewV2(handler)
 	lambda.Start(adapter.ProxyWithContext)
 }
